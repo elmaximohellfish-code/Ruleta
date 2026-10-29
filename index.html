@@ -1,507 +1,343 @@
-<!-- ... existing code ... -->
-<!-- Complete self-contained Christmas wheel code with Google Sheets integration and embedded publishing modal -->
 <!DOCTYPE html>
 <html lang="es" class="h-full bg-slate-950 text-slate-100">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ruleta de Amigo Navideño 🎄</title>
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Canvas Confetti -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-
-  <style>
-    body { font-family: 'Outfit', sans-serif; }
-    .font-christmas { font-family: 'Mountains of Christmas', cursive; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.8); }
-    ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 4px; }
-    .glow-gold { box-shadow: 0 0 35px -5px rgba(234, 179, 8, 0.4); }
-    .glow-red { box-shadow: 0 0 35px -5px rgba(220, 38, 38, 0.4); }
-    .glow-text-gold { text-shadow: 0 0 16px rgba(250, 204, 21, 0.7); }
-    
-    @keyframes flashLight {
-      0%, 100% { opacity: 1; filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.8)); }
-      50% { opacity: 0.3; filter: drop-shadow(0 0 0px transparent); }
-    }
-    .light-bulb { animation: flashLight 1.5s infinite ease-in-out; }
-    .light-bulb:nth-child(2n) { animation-delay: 0.3s; }
-    .light-bulb:nth-child(3n) { animation-delay: 0.6s; }
-    .light-bulb:nth-child(4n) { animation-delay: 0.9s; }
-
-    @keyframes spin-slow {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    .animate-spin-slow { animation: spin-slow 14s linear infinite; }
-
-    @keyframes float-pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.02); }
-    }
-    .animate-float-pulse { animation: float-pulse 3s ease-in-out infinite; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ruleta de Amigo Navideño 🎄</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Canvas Confetti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Outfit', sans-serif; }
+.font-christmas { font-family: 'Mountains of Christmas', cursive; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.8); }
+::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 4px; }
+.glow-gold { box-shadow: 0 0 35px -5px rgba(234, 179, 8, 0.4); }
+.glow-red { box-shadow: 0 0 35px -5px rgba(220, 38, 38, 0.4); }
+.glow-text-gold { text-shadow: 0 0 16px rgba(250, 204, 21, 0.7); }
+@keyframes flashLight {
+0%, 100% { opacity: 1; filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.8)); }
+50% { opacity: 0.3; filter: drop-shadow(0 0 0px transparent); }
+}
+.light-bulb { animation: flashLight 1.5s infinite ease-in-out; }
+.light-bulb:nth-child(2n) { animation-delay: 0.3s; }
+.light-bulb:nth-child(3n) { animation-delay: 0.6s; }
+.light-bulb:nth-child(4n) { animation-delay: 0.9s; }
+@keyframes spin-slow {
+from { transform: rotate(0deg); }
+to { transform: rotate(360deg); }
+}
+.animate-spin-slow { animation: spin-slow 14s linear infinite; }
+@keyframes float-pulse {
+0%, 100% { transform: scale(1); }
+50% { transform: scale(1.02); }
+}
+.animate-float-pulse { animation: float-pulse 3s ease-in-out infinite; }
+</style>
 </head>
 <body class="min-h-screen flex flex-col justify-between bg-gradient-to-b from-slate-950 via-emerald-950/40 to-slate-950 text-slate-100 selection:bg-red-600 selection:text-white relative overflow-x-hidden">
-
-  <!-- Background Snow Canvas -->
-  <canvas id="snowCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-80"></canvas>
-
-  <!-- Twinkling Christmas Lights -->
-  <div class="w-full bg-slate-950/80 border-b border-red-900/40 py-1.5 px-4 flex justify-around items-center z-20 relative overflow-hidden">
-    <div class="light-bulb text-red-500 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
-    <div class="light-bulb text-amber-400 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
-    <div class="light-bulb text-emerald-400 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
-    <div class="light-bulb text-blue-400 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
-    <div class="light-bulb text-red-500 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
-    <div class="light-bulb text-amber-400 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
-    <div class="light-bulb text-emerald-400 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
-    <div class="light-bulb text-blue-400 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
-  </div>
-
-  <!-- Header -->
-  <header class="border-b border-red-900/50 bg-slate-900/80 backdrop-blur-md sticky top-0 z-30 shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      
-      <div class="flex items-center space-x-3">
-        <div class="bg-gradient-to-tr from-red-600 via-amber-500 to-emerald-600 p-2.5 rounded-2xl shadow-lg shadow-red-600/30 border border-amber-400/30">
-          <i class="fa-solid fa-gift text-2xl text-white"></i>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-2xl md:text-3xl font-bold font-christmas tracking-wide bg-gradient-to-r from-red-400 via-amber-200 to-emerald-400 bg-clip-text text-transparent">
-              Ruleta de Amigo Navideño 🎄
-            </h1>
-            <span id="roleBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-slate-800 border-slate-700 text-slate-300 flex items-center gap-1">
-              <i class="fa-solid fa-user-check"></i> <span id="roleBadgeText">Participante</span>
-            </span>
-          </div>
-          <p class="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
-            <span>Sorteo Secreto Navideño</span>
-            <span id="sheetSyncBadge" class="inline-flex items-center gap-1 text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">
-              <i class="fa-solid fa-database text-amber-400"></i> <span id="syncBadgeText">Modo Local</span>
-            </span>
-          </p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-2 flex-wrap z-10">
-        
-        <button id="btnOpenPublishModal" class="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs md:text-sm px-3.5 py-2 rounded-xl transition shadow-lg shadow-amber-500/20 active:scale-95 border border-amber-300">
-          <i class="fa-solid fa-globe"></i>
-          <span>¿Cómo Publicar Gratis?</span>
-        </button>
-
-        <button id="btnOpenSheetModal" class="flex items-center gap-2 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 text-emerald-300 text-xs md:text-sm font-semibold px-3.5 py-2 rounded-xl transition active:scale-95">
-          <i class="fa-solid fa-table text-emerald-400"></i>
-          <span class="hidden sm:inline">Google Sheets</span>
-        </button>
-
-        <button id="btnAdminAuth" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs md:text-sm font-semibold px-3.5 py-2 rounded-xl transition active:scale-95">
-          <i class="fa-solid fa-shield-halved text-amber-400" id="adminBtnIcon"></i>
-          <span id="adminBtnText">Modo Admin</span>
-        </button>
-      </div>
-
-    </div>
-  </header>
-
-  <!-- Main Content -->
-  <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative z-10">
-    
-    <div class="lg:col-span-7 flex flex-col items-center gap-6">
-      
-      <div class="w-full bg-slate-900/90 border border-red-900/40 rounded-2xl p-4 shadow-xl backdrop-blur-md">
-        <div class="flex items-center justify-between mb-2">
-          <label for="currentUserSelect" class="block text-xs font-semibold uppercase tracking-wider text-amber-300 flex items-center gap-2">
-            <i class="fa-solid fa-paw text-red-400"></i>
-            Selecciona tu animal:
-          </label>
-          <button id="btnRefreshSheets" class="text-[11px] text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition">
-            <i class="fa-solid fa-rotate text-xs"></i> Actualizar lista
-          </button>
-        </div>
-        
-        <div class="relative">
-          <select id="currentUserSelect" class="w-full bg-slate-950 border-2 border-red-900/60 focus:border-amber-400 text-white rounded-xl px-4 py-3 text-base font-semibold outline-none transition appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-            <option value="">-- Selecciona tu animal aquí --</option>
-          </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-amber-400">
-            <i class="fa-solid fa-chevron-down text-sm"></i>
-          </div>
-        </div>
-
-        <p id="exclusionStatus" class="text-xs text-slate-400 mt-2.5 flex items-center gap-2 bg-slate-950/80 p-2.5 rounded-xl border border-slate-800/80">
-          <i class="fa-solid fa-hand-pointer text-amber-400 text-sm flex-shrink-0" id="exclusionIcon"></i>
-          <span id="exclusionStatusText">Por favor, despliega el menú para seleccionar tu animal.</span>
-        </p>
-      </div>
-
-      <div class="relative flex flex-col items-center justify-center w-full max-w-md aspect-square bg-slate-900/70 border-2 border-red-800/50 rounded-3xl p-4 shadow-2xl backdrop-blur-md overflow-hidden glow-red">
-        <div class="absolute top-2 left-1/2 -translate-x-1/2 z-20 pointer-events-none filter drop-shadow-lg text-center">
-          <div class="w-0 h-0 border-l-[18px] border-l-transparent border-r-[18px] border-r-transparent border-t-[32px] border-t-amber-400"></div>
-          <div class="w-3 h-3 bg-red-600 rounded-full mx-auto -mt-7 border border-amber-200"></div>
-        </div>
-
-        <canvas id="wheelCanvas" class="w-full h-full cursor-pointer rounded-full transition-transform"></canvas>
-
-        <button id="btnSpinCenter" disabled class="absolute z-10 w-20 h-20 bg-gradient-to-tr from-red-600 via-amber-500 to-emerald-600 hover:from-red-500 hover:to-emerald-500 text-white font-black text-lg rounded-full shadow-2xl shadow-red-600/50 flex flex-col items-center justify-center border-4 border-slate-950 transition transform hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed">
-          <span>GIRAR</span>
-          <i class="fa-solid fa-tree text-xs mt-0.5 animate-spin-slow text-amber-200"></i>
-        </button>
-      </div>
-
-      <div class="flex items-center gap-3 w-full max-w-md">
-        <button id="btnSpin" disabled class="flex-1 bg-gradient-to-r from-red-600 via-amber-600 to-emerald-600 hover:from-red-500 hover:to-emerald-500 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-red-600/25 transition active:scale-95 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed border border-amber-400/20">
-          <i class="fa-solid fa-gift text-lg"></i>
-          <span>¡GIRAR RULETA NAVIDEÑA!</span>
-        </button>
-        <button id="btnMute" class="p-3.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-2xl transition border border-slate-700" title="Silenciar">
-          <i class="fa-solid fa-volume-high text-lg" id="muteIcon"></i>
-        </button>
-      </div>
-
-    </div>
-
-    <div class="lg:col-span-5 flex flex-col gap-6">
-      
-      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl backdrop-blur-md flex flex-col gap-4">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-paw text-amber-400"></i>
-            <h2 class="font-bold text-slate-200">Animales Participantes</h2>
-            <span id="participantCount" class="bg-red-950 text-red-300 border border-red-800 text-xs px-2.5 py-0.5 rounded-full font-semibold">0</span>
-          </div>
-
-          <button id="btnClearAll" class="admin-only hidden text-xs text-rose-400 hover:text-rose-300 transition hover:underline">
-            Borrar Todos
-          </button>
-        </div>
-
-        <div id="readOnlyBanner" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-400 flex items-center gap-2">
-          <i class="fa-solid fa-lock text-amber-400 text-sm flex-shrink-0"></i>
-          <span>Modo Participante. Edición protegida por contraseña de Administrador.</span>
-        </div>
-
-        <form id="addParticipantForm" class="admin-only hidden flex gap-2">
-          <input type="text" id="newParticipantInput" placeholder="Añadir nuevo animal..." class="flex-1 bg-slate-950 border border-slate-800 focus:border-emerald-500 text-white rounded-xl px-3.5 py-2 text-sm outline-none transition" />
-          <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl font-semibold text-sm transition active:scale-95 flex items-center gap-1">
-            <i class="fa-solid fa-plus"></i>
-            <span>Añadir</span>
-          </button>
-        </form>
-
-        <div id="participantList" class="max-h-56 overflow-y-auto space-y-1.5 pr-1">
-          <!-- Populated dynamically -->
-        </div>
-      </div>
-
-      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl backdrop-blur-md flex flex-col gap-4">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-clock-rotate-left text-red-400"></i>
-            <h2 class="font-bold text-slate-200">Registro de Giros</h2>
-          </div>
-        </div>
-
-        <div id="historyList" class="max-h-48 overflow-y-auto space-y-2 pr-1">
-          <p class="text-xs text-slate-500 italic text-center py-4">Aún no se han realizado giros navideños.</p>
-        </div>
-      </div>
-
-    </div>
-
-  </main>
-
-  <footer class="border-t border-slate-900 bg-slate-950 py-4 text-center text-xs text-slate-500 relative z-10">
-    <p>🎄 Ruleta de Amigo Navideño</p>
-  </footer>
-
-  <!-- Modal: Publish Guide -->
-  <div id="publishModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="max-w-xl w-full bg-slate-900 border border-amber-500/30 rounded-3xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <button id="btnClosePublishModal" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-
-      <div class="flex items-center gap-3 mb-4">
-        <div class="p-3 bg-amber-500/20 text-amber-400 rounded-2xl border border-amber-500/30">
-          <i class="fa-solid fa-rocket text-2xl"></i>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold text-white">Publicar la Ruleta Gratis</h3>
-          <p class="text-xs text-slate-400">Dos métodos sencillos para tener un enlace propio</p>
-        </div>
-      </div>
-
-      <div class="space-y-4 text-xs text-slate-300">
-        <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl space-y-2">
-          <h4 class="font-bold text-emerald-400 text-sm flex items-center gap-2">
-            <i class="fa-solid fa-bolt"></i> Opción 1: Tiiny.host (Rápido, 1 clic sin cuentas)
-          </h4>
-          <ol class="list-decimal list-inside space-y-1 text-slate-300 pl-1">
-            <li>Guarda el código como <strong>index.html</strong> en tu PC.</li>
-            <li>Entra a <strong class="text-amber-300">tiiny.host</strong>.</li>
-            <li>Escribe un nombre para el enlace (ej: <code>mi-amigo-secreto</code>).</li>
-            <li>Arrastra tu archivo <code>index.html</code> y haz clic en <strong>Publish</strong>.</li>
-          </ol>
-        </div>
-
-        <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl space-y-2">
-          <h4 class="font-bold text-amber-400 text-sm flex items-center gap-2">
-            <i class="fa-solid fa-infinity"></i> Opción 2: GitHub Pages (100% Gratis para siempre)
-          </h4>
-          <ol class="list-decimal list-inside space-y-1 text-slate-300 pl-1">
-            <li>Entra a <strong>github.com</strong> y crea una cuenta gratuita.</li>
-            <li>Crea un nuevo repositorio público llamado <code>amigo-secreto</code>.</li>
-            <li>Sube el archivo <code>index.html</code>.</li>
-            <li>Ve a <strong>Settings ➔ Pages</strong>, selecciona la rama <code>main</code> y guarda.</li>
-          </ol>
-        </div>
-      </div>
-
-      <div class="mt-6 text-right">
-        <button id="btnClosePublishModal2" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-5 py-2.5 rounded-xl font-semibold transition">
-          Entendido
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Permanent Screen Lock -->
-  <div id="lockScreenOverlay" class="hidden fixed inset-0 z-50 bg-slate-950/98 backdrop-blur-2xl flex items-center justify-center p-4 overflow-hidden select-none">
-    <div class="max-w-lg w-full bg-slate-900/95 border-2 border-amber-400/50 rounded-3xl p-6 md:p-8 text-center shadow-2xl relative z-10 glow-gold animate-float-pulse">
-      <div class="w-20 h-20 bg-gradient-to-tr from-red-600 via-amber-500 to-emerald-600 rounded-3xl mx-auto flex items-center justify-center mb-4 shadow-xl shadow-red-600/30 border border-amber-300">
-        <i class="fa-solid fa-gift text-4xl text-white"></i>
-      </div>
-
-      <h2 class="font-christmas text-3xl md:text-4xl text-amber-300 mb-1">
-        🎄 ¡Feliz Navidad! 🎁
-      </h2>
-
-      <p class="text-xs text-slate-300 mb-6">
-        Animal que realizó el giro: <strong id="lockedGiverName" class="text-amber-200">Animal</strong>
-      </p>
-
-      <div class="bg-slate-950 border border-amber-500/30 rounded-2xl p-6 mb-6 shadow-inner">
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Te ha tocado el amigo secreto:</p>
-        <h3 id="lockedWinnerName" class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-200 to-emerald-300 glow-text-gold break-words">
-          -
-        </h3>
-      </div>
-
-      <div class="bg-red-950/70 border border-red-800/80 rounded-2xl p-4 text-xs text-red-200 text-left space-y-2">
-        <div class="flex items-center gap-2 font-bold text-amber-300 text-sm">
-          <i class="fa-solid fa-lock text-red-400"></i>
-          <span>Resultado Guardado</span>
-        </div>
-        <p class="text-[11px] leading-relaxed text-red-200/90">
-          Has completado tu giro navideño. Esta pantalla ha sido bloqueada permanentemente para resguardar tu asignación secreta.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast -->
-  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-emerald-600 text-white text-sm px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-    <i class="fa-solid fa-circle-check"></i>
-    <span id="toastMsg">Notificación</span>
-  </div>
-
-  <script>
-    const CHRISTMAS_COLORS = [
-      '#dc2626', '#15803d', '#d97706', '#0284c7', '#b91c1c',
-      '#166534', '#b45309', '#0369a1', '#991b1b', '#047857'
-    ];
-
-    class SnowEffect {
-      constructor(canvasId) {
-        this.canvas = document.getElementById(canvasId);
-        this.ctx = this.canvas.getContext('2d');
-        this.particles = [];
-        this.resize();
-        this.init();
-        window.addEventListener('resize', () => this.resize());
-      }
-      resize() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-      }
-      init() {
-        this.particles = [];
-        const count = Math.floor(window.innerWidth / 12);
-        for (let i = 0; i < count; i++) {
-          this.particles.push({
-            x: Math.random() * this.canvas.width,
-            y: Math.random() * this.canvas.height,
-            r: Math.random() * 3 + 1,
-            d: Math.random() * count,
-            speed: Math.random() * 1 + 0.5
-          });
-        }
-      }
-      draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        this.ctx.beginPath();
-        for (let i = 0; i < this.particles.length; i++) {
-          const p = this.particles[i];
-          this.ctx.moveTo(p.x, p.y);
-          this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
-        }
-        this.ctx.fill();
-        this.update();
-      }
-      update() {
-        for (let i = 0; i < this.particles.length; i++) {
-          const p = this.particles[i];
-          p.y += p.speed;
-          p.x += Math.sin(p.d) * 0.5;
-          p.d += 0.01;
-          if (p.y > this.canvas.height) {
-            this.particles[i] = {
-              x: Math.random() * this.canvas.width,
-              y: -10,
-              r: p.r,
-              d: p.d,
-              speed: p.speed
-            };
-          }
-        }
-      }
-    }
-
-    const DEFAULT_ANIMALS = [
-      'León', 'Tigre', 'Águila', 'Oso', 'Lobo', 
-      'Pantera', 'Zorro', 'Búho', 'Jaguar', 'Cóndor', 'Delfín', 'Halcón'
-    ];
-
-    let masterParticipants = [...DEFAULT_ANIMALS];
-    let activeParticipants = [...masterParticipants];
-    let selectedUser = '';
-    let currentAngle = 0;
-
-    const canvas = document.getElementById('wheelCanvas');
-    const ctx = canvas.getContext('2d');
-    const btnSpin = document.getElementById('btnSpin');
-    const btnSpinCenter = document.getElementById('btnSpinCenter');
-    const currentUserSelect = document.getElementById('currentUserSelect');
-    const exclusionStatusText = document.getElementById('exclusionStatusText');
-    const publishModal = document.getElementById('publishModal');
-
-    document.getElementById('btnOpenPublishModal').addEventListener('click', () => publishModal.classList.remove('hidden'));
-    document.getElementById('btnClosePublishModal').addEventListener('click', () => publishModal.classList.add('hidden'));
-    document.getElementById('btnClosePublishModal2').addEventListener('click', () => publishModal.classList.add('hidden'));
-
-    function resizeCanvas() {
-      const parent = canvas.parentElement;
-      const size = Math.min(parent.clientWidth - 32, 400);
-      canvas.width = size * window.devicePixelRatio;
-      canvas.height = size * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-      drawWheel();
-    }
-
-    function getWheelOptions() {
-      if (!selectedUser) return activeParticipants;
-      const cleanSelected = selectedUser.trim().toLowerCase();
-      return activeParticipants.filter(p => p.toLowerCase() !== cleanSelected);
-    }
-
-    function drawWheel() {
-      const options = getWheelOptions();
-      const width = canvas.width / window.devicePixelRatio;
-      const height = canvas.height / window.devicePixelRatio;
-      const centerX = width / 2;
-      const centerY = height / 2;
-      const radius = Math.min(centerX, centerY) - 8;
-
-      ctx.clearRect(0, 0, width, height);
-
-      if (options.length === 0) {
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        ctx.fillStyle = '#0f172a';
-        ctx.fill();
-        ctx.stroke();
-        return;
-      }
-
-      const sliceAngle = (Math.PI * 2) / options.length;
-
-      options.forEach((name, index) => {
-        const startAngle = currentAngle + index * sliceAngle;
-        const endAngle = startAngle + sliceAngle;
-
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-        ctx.closePath();
-        ctx.fillStyle = CHRISTMAS_COLORS[index % CHRISTMAS_COLORS.length];
-        ctx.fill();
-        ctx.strokeStyle = '#020617';
-        ctx.stroke();
-
-        ctx.save();
-        ctx.translate(centerX, centerY);
-        ctx.rotate(startAngle + sliceAngle / 2);
-        ctx.textAlign = 'right';
-        ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#ffffff';
-        const fontSize = Math.max(10, Math.min(16, 240 / options.length));
-        ctx.font = `bold ${fontSize}px Outfit`;
-        ctx.fillText(name, radius - 20, 0);
-        ctx.restore();
-      });
-    }
-
-    function checkSpinEligibility() {
-      if (!selectedUser) {
-        btnSpin.disabled = true;
-        btnSpinCenter.disabled = true;
-        exclusionStatusText.innerHTML = `Por favor, <strong>selecciona tu animal del menú desplegable</strong>.`;
-        return false;
-      }
-      btnSpin.disabled = false;
-      btnSpinCenter.disabled = false;
-      exclusionStatusText.innerHTML = `Animal seleccionado: <strong class="text-amber-300">${selectedUser}</strong>. ¡Listo para girar!`;
-      return true;
-    }
-
-    function renderParticipantsUI() {
-      currentUserSelect.innerHTML = '<option value="">-- Selecciona tu animal aquí --</option>' + 
-        masterParticipants.map(name => `<option value="${name}">${name}</option>`).join('');
-
-      drawWheel();
-      checkSpinEligibility();
-    }
-
-    currentUserSelect.addEventListener('change', () => {
-      selectedUser = currentUserSelect.value;
-      renderParticipantsUI();
-    });
-
-    window.onload = function() {
-      const snow = new SnowEffect('snowCanvas');
-      function renderSnow() {
-        snow.draw();
-        requestAnimationFrame(renderSnow);
-      }
-      renderSnow();
-      resizeCanvas();
-      renderParticipantsUI();
-    };
-  </script>
+<!-- Background Snow Canvas -->
+<canvas id="snowCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-80"></canvas>
+<!-- Twinkling Christmas Lights -->
+<div class="w-full bg-slate-950/80 border-b border-red-900/40 py-1.5 px-4 flex justify-around items-center z-20 relative overflow-hidden">
+<div class="light-bulb text-red-500 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
+<div class="light-bulb text-amber-400 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
+<div class="light-bulb text-emerald-400 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
+<div class="light-bulb text-blue-400 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
+<div class="light-bulb text-red-500 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
+<div class="light-bulb text-amber-400 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
+<div class="light-bulb text-emerald-400 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
+<div class="light-bulb text-blue-400 text-xs"><i class="fa-solid fa-lightbulb"></i></div>
+</div>
+<!-- Header -->
+<header class="border-b border-red-900/50 bg-slate-900/80 backdrop-blur-md sticky top-0 z-30 shadow-lg">
+<div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center space-x-3">
+<div class="bg-gradient-to-tr from-red-600 via-amber-500 to-emerald-600 p-2.5 rounded-2xl shadow-lg shadow-red-600/30 border border-amber-400/30">
+<i class="fa-solid fa-gift text-2xl text-white"></i>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h1 class="text-2xl md:text-3xl font-bold font-christmas tracking-wide bg-gradient-to-r from-red-400 via-amber-200 to-emerald-400 bg-clip-text text-transparent">
+Ruleta de Amigo Navideño 🎄
+</h1>
+</div>
+<p class="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
+<span>Sorteo Secreto Navideño</span>
+</p>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-4 py-6 w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative z-10">
+<div class="lg:col-span-12 flex flex-col items-center gap-6">
+<!-- Selector de Animal -->
+<div class="w-full max-w-md bg-slate-900/90 border-2 border-amber-500/50 rounded-2xl p-5 shadow-2xl backdrop-blur-md glow-gold">
+<label for="currentUserSelect" class="block text-sm font-bold uppercase tracking-wider text-amber-300 flex items-center gap-2 mb-2">
+<i class="fa-solid fa-paw text-red-400 text-lg"></i>
+1. Selecciona tu animal aquí:
+</label>
+<div class="relative">
+<select id="currentUserSelect" class="w-full bg-slate-950 border-2 border-amber-400 text-amber-200 font-bold rounded-xl px-4 py-3.5 text-lg outline-none transition cursor-pointer">
+<option value="">-- Toca aquí para elegir tu animal --</option>
+<option value="León">🦁 León</option>
+<option value="Tigre">🐯 Tigre</option>
+<option value="Águila">🦅 Águila</option>
+<option value="Oso">🐻 Oso</option>
+<option value="Lobo">🐺 Lobo</option>
+<option value="Pantera">🐆 Pantera</option>
+<option value="Zorro">🦊 Zorro</option>
+<option value="Búho">🦉 Búho</option>
+<option value="Jaguar">🐆 Jaguar</option>
+<option value="Cóndor">🦅 Cóndor</option>
+<option value="Delfín">🐬 Delfín</option>
+<option value="Halcón">🦅 Halcón</option>
+</select>
+</div>
+<p id="exclusionStatusText" class="text-xs text-slate-300 mt-3 p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-center font-medium">
+👉 Primero selecciona tu animal para poder girar.
+</p>
+</div>
+<!-- Canvas de la Ruleta -->
+<div class="relative flex flex-col items-center justify-center w-full max-w-md aspect-square bg-slate-900/70 border-2 border-red-800/50 rounded-3xl p-4 shadow-2xl backdrop-blur-md overflow-hidden glow-red">
+<div class="absolute top-2 left-1/2 -translate-x-1/2 z-20 pointer-events-none filter drop-shadow-lg text-center">
+<div class="w-0 h-0 border-l-[18px] border-l-transparent border-r-[18px] border-r-transparent border-t-[32px] border-t-amber-400"></div>
+<div class="w-3 h-3 bg-red-600 rounded-full mx-auto -mt-7 border border-amber-200"></div>
+</div>
+<canvas id="wheelCanvas" class="w-full h-full rounded-full transition-transform"></canvas>
+<button id="btnSpinCenter" disabled class="absolute z-10 w-20 h-20 bg-gradient-to-tr from-emerald-600 via-amber-500 to-red-600 hover:from-emerald-500 hover:to-red-500 text-white font-black text-lg rounded-full shadow-2xl flex flex-col items-center justify-center border-4 border-slate-950 transition transform hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+<span>GIRAR</span>
+<i class="fa-solid fa-tree text-xs mt-0.5 text-amber-200"></i>
+</button>
+</div>
+<!-- Botón Principal Girar -->
+<div class="w-full max-w-md">
+<button id="btnSpin" disabled class="w-full bg-gradient-to-r from-red-600 via-amber-600 to-emerald-600 hover:from-red-500 hover:to-emerald-500 text-white font-black text-lg py-4 px-6 rounded-2xl shadow-xl transition active:scale-95 flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed border-2 border-amber-400/40 cursor-pointer">
+<i class="fa-solid fa-gift text-2xl"></i>
+<span id="btnSpinText">¡GIRAR RULETA NAVIDEÑA!</span>
+</button>
+</div>
+</div>
+</main>
+<footer class="border-t border-slate-900 bg-slate-950 py-4 text-center text-xs text-slate-500 relative z-10">
+<p>🎄 Ruleta de Amigo Navideño</p>
+</footer>
+<!-- Pantalla de Bloqueo tras Girar -->
+<div id="lockScreenOverlay" class="hidden fixed inset-0 z-50 bg-slate-950/98 backdrop-blur-2xl flex items-center justify-center p-4 select-none">
+<div class="max-w-lg w-full bg-slate-900 border-2 border-amber-400/50 rounded-3xl p-6 md:p-8 text-center shadow-2xl relative z-10 glow-gold animate-float-pulse">
+<div class="w-20 h-20 bg-gradient-to-tr from-red-600 via-amber-500 to-emerald-600 rounded-3xl mx-auto flex items-center justify-center mb-4 shadow-xl border border-amber-300">
+<i class="fa-solid fa-gift text-4xl text-white"></i>
+</div>
+<h2 class="font-christmas text-3xl md:text-4xl text-amber-300 mb-1">
+🎄 ¡Feliz Navidad! 🎁
+</h2>
+<p class="text-xs text-slate-300 mb-6">
+Animal seleccionado: <strong id="lockedGiverName" class="text-amber-200">-</strong>
+</p>
+<div class="bg-slate-950 border border-amber-500/30 rounded-2xl p-6 mb-6 shadow-inner">
+<p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Te ha tocado como Amigo Secreto:</p>
+<h3 id="lockedWinnerName" class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-200 to-emerald-300 glow-text-gold break-words">
+-
+</h3>
+</div>
+<div class="bg-red-950/70 border border-red-800/80 rounded-2xl p-4 text-xs text-red-200 text-left space-y-2">
+<div class="flex items-center gap-2 font-bold text-amber-300 text-sm">
+<i class="fa-solid fa-lock text-red-400"></i>
+<span>Sorteo Guardado</span>
+</div>
+<p class="text-[11px] leading-relaxed text-red-200/90">
+Has completado tu tiro navideño. Guarda el nombre de tu amigo secreto.
+</p>
+</div>
+</div>
+</div>
+<script>
+const CHRISTMAS_COLORS = [
+'#dc2626', '#15803d', '#d97706', '#0284c7', '#b91c1c',
+'#166534', '#b45309', '#0369a1', '#991b1b', '#047857'
+];
+const ALL_ANIMALS = [
+'León', 'Tigre', 'Águila', 'Oso', 'Lobo',
+'Pantera', 'Zorro', 'Búho', 'Jaguar', 'Cóndor', 'Delfín', 'Halcón'
+];
+let selectedUser = '';
+let currentAngle = 0;
+let isSpinning = false;
+const canvas = document.getElementById('wheelCanvas');
+const ctx = canvas.getContext('2d');
+const btnSpin = document.getElementById('btnSpin');
+const btnSpinCenter = document.getElementById('btnSpinCenter');
+const currentUserSelect = document.getElementById('currentUserSelect');
+const exclusionStatusText = document.getElementById('exclusionStatusText');
+// Nieve
+class SnowEffect {
+constructor(canvasId) {
+this.canvas = document.getElementById(canvasId);
+this.ctx = this.canvas.getContext('2d');
+this.particles = [];
+this.resize();
+this.init();
+window.addEventListener('resize', () => this.resize());
+}
+resize() {
+this.canvas.width = window.innerWidth;
+this.canvas.height = window.innerHeight;
+}
+init() {
+this.particles = [];
+const count = Math.floor(window.innerWidth / 12);
+for (let i = 0; i < count; i++) {
+this.particles.push({
+x: Math.random() * this.canvas.width,
+y: Math.random() * this.canvas.height,
+r: Math.random() * 3 + 1,
+d: Math.random() * count,
+speed: Math.random() * 1 + 0.5
+});
+}
+}
+draw() {
+this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+this.ctx.beginPath();
+for (let i = 0; i < this.particles.length; i++) {
+const p = this.particles[i];
+this.ctx.moveTo(p.x, p.y);
+this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+}
+this.ctx.fill();
+this.update();
+}
+update() {
+for (let i = 0; i < this.particles.length; i++) {
+const p = this.particles[i];
+p.y += p.speed;
+p.x += Math.sin(p.d) * 0.5;
+p.d += 0.01;
+if (p.y > this.canvas.height) {
+this.particles[i] = {
+x: Math.random() * this.canvas.width,
+y: -10,
+r: p.r,
+d: p.d,
+speed: p.speed
+};
+}
+}
+}
+}
+function getWheelOptions() {
+if (!selectedUser) return ALL_ANIMALS;
+return ALL_ANIMALS.filter(animal => animal.toLowerCase() !== selectedUser.toLowerCase());
+}
+function drawWheel() {
+const options = getWheelOptions();
+const parent = canvas.parentElement;
+const size = Math.min(parent.clientWidth - 32, 380);
+canvas.width = size;
+canvas.height = size;
+const centerX = size / 2;
+const centerY = size / 2;
+const radius = size / 2 - 10;
+ctx.clearRect(0, 0, size, size);
+const sliceAngle = (Math.PI * 2) / options.length;
+options.forEach((name, index) => {
+const startAngle = currentAngle + index * sliceAngle;
+const endAngle = startAngle + sliceAngle;
+ctx.beginPath();
+ctx.moveTo(centerX, centerY);
+ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+ctx.closePath();
+ctx.fillStyle = CHRISTMAS_COLORS[index % CHRISTMAS_COLORS.length];
+ctx.fill();
+ctx.strokeStyle = '#020617';
+ctx.lineWidth = 2;
+ctx.stroke();
+ctx.save();
+ctx.translate(centerX, centerY);
+ctx.rotate(startAngle + sliceAngle / 2);
+ctx.textAlign = 'right';
+ctx.textBaseline = 'middle';
+ctx.fillStyle = '#ffffff';
+ctx.font = 'bold 14px Outfit';
+ctx.fillText(name, radius - 15, 0);
+ctx.restore();
+});
+}
+function onAnimalSelected() {
+selectedUser = currentUserSelect.value;
+if (selectedUser) {
+btnSpin.disabled = false;
+btnSpinCenter.disabled = false;
+exclusionStatusText.innerHTML = ✅ Animal seleccionado: <strong class="text-amber-300 font-bold">${selectedUser}</strong>. Tu animal ha sido excluido de la ruleta. ¡Haz clic en GIRAR!;
+exclusionStatusText.className = "text-xs text-emerald-300 mt-3 p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-700 text-center font-medium";
+} else {
+btnSpin.disabled = true;
+btnSpinCenter.disabled = true;
+exclusionStatusText.innerHTML = 👉 Primero selecciona tu animal para poder girar.;
+exclusionStatusText.className = "text-xs text-slate-300 mt-3 p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-center font-medium";
+}
+drawWheel();
+}
+function spinWheel() {
+if (!selectedUser || isSpinning) return;
+isSpinning = true;
+btnSpin.disabled = true;
+btnSpinCenter.disabled = true;
+currentUserSelect.disabled = true;
+const options = getWheelOptions();
+const totalRounds = 5 + Math.random() * 5;
+const randomSlice = Math.floor(Math.random() * options.length);
+const sliceAngle = (Math.PI * 2) / options.length;
+const targetAngle = currentAngle + (totalRounds * Math.PI * 2) + (randomSlice * sliceAngle);
+const startTime = performance.now();
+const duration = 5000;
+function animate(currentTime) {
+const elapsed = currentTime - startTime;
+const progress = Math.min(elapsed / duration, 1);
+const easeOut = 1 - Math.pow(1 - progress, 4);
+currentAngle = currentAngle + (targetAngle - currentAngle) * easeOut;
+drawWheel();
+if (progress < 1) {
+requestAnimationFrame(animate);
+} else {
+isSpinning = false;
+const actualAngle = (Math.PI * 1.5 - currentAngle) % (Math.PI * 2);
+const normalizedAngle = (actualAngle + Math.PI * 2) % (Math.PI * 2);
+const winningIndex = Math.floor(normalizedAngle / sliceAngle) % options.length;
+const winner = options[winningIndex];
+confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+setTimeout(() => {
+document.getElementById('lockedGiverName').innerText = selectedUser;
+document.getElementById('lockedWinnerName').innerText = winner;
+document.getElementById('lockScreenOverlay').classList.remove('hidden');
+}, 600);
+}
+}
+requestAnimationFrame(animate);
+}
+currentUserSelect.addEventListener('change', onAnimalSelected);
+btnSpin.addEventListener('click', spinWheel);
+btnSpinCenter.addEventListener('click', spinWheel);
+window.onload = function() {
+const snow = new SnowEffect('snowCanvas');
+function renderSnow() {
+snow.draw();
+requestAnimationFrame(renderSnow);
+}
+renderSnow();
+drawWheel();
+};
+window.addEventListener('resize', drawWheel);
+</script>
 </body>
 </html>
